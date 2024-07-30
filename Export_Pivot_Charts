@@ -4,12 +4,16 @@ Sub ExportPivotTableAndChartsToWord()
     Dim cht As ChartObject
     Dim wdApp As Object
     Dim wdDoc As Object
-    Dim wsChart As Worksheet
     Dim chartCount As Integer
     Dim i As Integer
     
-    ' Set the worksheet
-    Set ws = ThisWorkbook.Sheets("Sheet1") ' Change "Sheet1" to your sheet name
+    ' Set the worksheet to the active sheet
+    Set ws = ActiveSheet
+    
+    ' Remove the existing slicer
+    On Error Resume Next
+    ws.Slicers(1).Delete
+    On Error GoTo 0
     
     ' Create a new Word Application
     On Error Resume Next
