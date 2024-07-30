@@ -1,0 +1,48 @@
+Sub ExportPivotTableAndChartsToWord()
+    Dim ws As Worksheet
+    Dim pt As PivotTable
+    Dim cht As ChartObject
+    Dim wdApp As Object
+    Dim wdDoc As Object
+    Dim wsChart As Worksheet
+    Dim chartCount As Integer
+    Dim i As Integer
+    
+    ' Set the worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1") ' Change "Sheet1" to your sheet name
+    
+    ' Create a new Word Application
+    On Error Resume Next
+    Set wdApp = GetObject(Class:="Word.Application")
+    If wdApp Is Nothing Then
+        Set wdApp = CreateObject(Class:="Word.Application")
+    End If
+    On Error GoTo 0
+    
+    wdApp.Visible = True
+    
+    ' Create a new Word Document
+    Set wdDoc = wdApp.Documents.Add
+    
+    ' Copy PivotTable
+    Set pt = ws.PivotTables(1) ' Assuming the pivot table is the first one on the sheet
+    pt.TableRange2.Copy
+    
+    ' Paste PivotTable in Word Document
+    wdDoc.Paragraphs(1).Range.PasteExcelTable False, False, False
+    wdDoc.Paragraphs.Add
+    
+    ' Copy and paste charts
+    chartCount = ws.ChartObjects.Count
+    For i = 1 To chartCount
+        ws.ChartObjects(i).Chart.CopyPicture
+        wdDoc.Paragraphs.Add
+        wdDoc.Paragraphs(wdDoc.Paragraphs.Count).Range.Paste
+        wdDoc.Paragraphs.Add
+    Next i
+    
+    ' Clean up
+    Set wdDoc = Nothing
+    Set wdApp = Nothing
+    Set ws = Nothing
+End Sub
